@@ -1,9 +1,11 @@
-(function ($) {
+(($) => {
   "use strict";
+  
+  console.log("SB LOADING 1...");
 
   $(function () {
-    var $node = $(".index #fullwidth-treeview");
-
+    var $node = $(".index #fullwidth-treeview-displayable");
+    console.log("SB LOADING 2...");
     if ($node.length) {
       loadTreeView();
     }
@@ -45,6 +47,8 @@
       $toggleButton.text(toggleText);
     });
   }
+
+  
 
   function loadTreeView() {
     var $treeViewConfig = $("#fullwidth-treeview-configuration");
@@ -163,29 +167,141 @@
       },
     };
 
+    function scrollToActive() {
+
+      var $activeNode;
+
+      $activeNode = $('li > a.jstree-clicked')[0];
+      //$activeNode = $('li[selected_on_load="true"]')[0];
+
+      //console.log($('li[selected_on_load="true"]').length);
+      //console.log($('li > a.jstree-clicked').html());
+      pager.updateMoreLink($moreButton, $resetButton);
+  
+      // Override default scrolling
+      if ($activeNode !== undefined) {
+        $activeNode.scrollIntoView(false);
+        //$("body")[0].scrollIntoView(true);
+      }
+      //console.log($fwTreeView.jstree("get_selected"));
+    };
+
     // Declare listeners
     // On ready: scroll to active node
     var readyListener = function () {
-      var $activeNode = $('li[selected_on_load="true"]')[0];
-
-      pager.updateMoreLink($moreButton, $resetButton);
-
-      // Override default scrolling
-      if ($activeNode !== undefined) {
-        $activeNode.scrollIntoView(true);
-        $("body")[0].scrollIntoView(true);
-      }
+      scrollToActive();
     };
 
     // On node selection: load the informationobject's page and insert the current page
     var selectNodeListener = function (e, data) {
+      console.log("SB select node event fired.");
       // Open node if possible
       data.instance.open_node(data.node);
 
       // When an element is clicked in the tree ... fetch it up
-      // window.location = window.location.origin + data.node.a_attr.href
+      //window.location = window.location.origin + data.node.a_attr.href
       var url = data.node.a_attr.href;
+
+      console.log('SB url:' + url);
+      console.log($fwTreeView.jstree("get_selected"));
+
       $.get(url, function (response) {
+        //$("body").html(response);
+        //console.log($("div.container-xxl"));
+        //console.log($("div.container-xxl", response));
+        //$("div.container-xxl").html($("div.container-xxl", response).html())
+        //var source = $('' + response + '');
+
+        //var $treeview = $("div#fullwidth-treeview-row");
+        //var $treeview = $("div#fullwidth-treeview");
+
+        //console.log($("div#fullwidth-treeview").html());
+        
+        
+        //$fwTreeView.jstree(true).destroy();
+        //$fwTreeView = $('<div id="fullwidth-treeview"></div>');
+        //$fwTreeViewRow = $('<div id="fullwidth-treeview-row"></div>');
+        //console.log($fwTreeViewRow.html());
+
+        response = $(response);
+        //console.log(response.find("div.row").html());
+        
+        
+        
+        //console.log(response.find("#wrapper"));
+        //document.write(response.find("div.container-xxl").html());
+        //$("div.container-xxl").html($(response.find("div.container-xxl").html()))
+        //$("div.container-xxl").html($(response.find("#main-column h1")))
+
+        /*$("div.row")
+          .first()
+          .replaceWith($(response.find('div.row').first()));*/
+
+        console.log("SB replacing html");
+
+        //$("div#wrapper")
+        //  .first()
+        //  .replaceWith($(response.find('div#wrapper').first()));
+
+        //$("#sidebar").remove();
+
+        //$("div.row").append($(response.find('div#sidebar').first()));
+
+        //$("#sidebar")
+        //  .first()
+        //  .replaceWith($(response.find('div#sidebar').first()));
+
+        $("#main-column")
+          .first()
+          .replaceWith($(response.find('div#main-column').first()));
+
+        //loadTreeView();
+
+        $mainHeader = $("#main-column h1").first();
+
+        $mainHeader.before($resetButton);
+        $mainHeader.before($moreButton);
+
+        $mainHeader.after(
+          $fwTreeViewRow
+            .append($fwTreeView)
+            //.animate({ height: "200px" }, 500)
+            .resizable({ handles: "s" })
+        );
+
+
+        // Optionally wrap treeview in a collapsible container
+        if (treeViewCollapseEnabled) {
+          makeFullTreeviewCollapsible($treeViewConfig, $mainHeader, $fwTreeViewRow);
+        }
+        /*
+        $mainHeader.after(
+          $treeview
+        );
+        */
+        //console.log(options);
+
+        $fwTreeView
+          .jstree(options)
+          .on("ready.jstree", readyListener)
+          .on("select_node.jstree", selectNodeListener)
+          .on("hover_node.jstree", hoverNodeListener)
+          .on("open_node.jstree", openNodeListener)
+          .on("move_node.jstree", moveNodeListener);
+
+
+
+        console.log("SB replacing html DONE");
+
+        scrollToActive();
+        //$fwTreeView.jstree("get_selected")[0].scrollIntoView(true);
+
+//#wrapper
+        // keep header
+        // target container xxl div - wraps from heading to the action items
+
+/*
+
         response = $(response);
 
         // Insert new content into page
@@ -226,6 +342,7 @@
         $(".translation-links").replaceWith(
           $(response.find(".translation-links"))
         );
+*/
 
         // Replace error message
         $("#main-column > .alert").remove();
@@ -235,9 +352,9 @@
         Drupal.attachBehaviors(document);
 
         // Update clipboard buttons
-        if (jQuery("#clipboard-menu").data("clipboard") !== undefined) {
+        /*if (jQuery("#clipboard-menu").data("clipboard") !== undefined) {
           jQuery("#clipboard-menu").data("clipboard").updateAllButtons();
-        }
+        }*/
 
         // Update the url, TODO save the state
         window.history.pushState(null, null, url);
@@ -307,14 +424,15 @@
       }
     };
 
+    console.log("SB initializing jstree");
     // Initialize jstree with options and listeners
     $fwTreeView
       .jstree(options)
-      .bind("ready.jstree", readyListener)
-      .bind("select_node.jstree", selectNodeListener)
-      .bind("hover_node.jstree", hoverNodeListener)
-      .bind("open_node.jstree", openNodeListener)
-      .bind("move_node.jstree", moveNodeListener);
+      .on("ready.jstree", readyListener)
+      .on("select_node.jstree", selectNodeListener)
+      .on("hover_node.jstree", hoverNodeListener)
+      .on("open_node.jstree", openNodeListener)
+      .on("move_node.jstree", moveNodeListener);
 
     // Clicking "more" will add next page of results to tree
     $moreButton.on("click", function () {

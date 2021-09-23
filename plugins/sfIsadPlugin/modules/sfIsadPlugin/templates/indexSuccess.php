@@ -19,6 +19,10 @@
     </div>
   <?php } ?>
 
+  <?php if ('sidebar' != sfConfig::get('app_treeview_type__source', 'sidebar')) { ?>
+    <?php echo include_partial('informationobject/fullwidthtreeview', ['resource' => $resource]); ?>
+  <?php } ?>
+
   <?php if (QubitInformationObject::ROOT_ID != $resource->parentId) { ?>
     <?php echo include_partial('default/breadcrumb', ['resource' => $resource, 'objects' => $resource->getAncestors()->andSelf()->orderBy('lft')]); ?>
   <?php } ?>

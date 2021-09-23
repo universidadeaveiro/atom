@@ -173,7 +173,7 @@
     }
 
     addTreeviewToAccordion() {
-      var $accordionWrapper = $("<section>", {
+      /*var $accordionWrapper = $("<section>", {
         class: "accordion full-treeview-section mb-3",
       });
       this.$accordionItem = $("<div>", {
@@ -195,7 +195,7 @@
         id: "collapse-treeview",
         class: "accordion-collapse collapse",
         "aria-labelledby": "heading-treeview",
-      });
+      });*/
 
       // Adjust bottom margins
       this.$fwTreeViewRow.css("margin-bottom", "0px");

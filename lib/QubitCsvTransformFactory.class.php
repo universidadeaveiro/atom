@@ -30,6 +30,8 @@ class QubitCsvTransformFactory
     public $setupLogic;
     public $transformLogic;
     public $preserveOrder;
+    public $sortOrderCallback;
+    public $levelsOfDescription;
     public $convertWindowsEncoding;
 
     public function __construct($options = [])
@@ -46,6 +48,8 @@ class QubitCsvTransformFactory
             'setupLogic',
             'transformLogic',
             'preserveOrder',
+            'sortOrderCallback',
+            'levelsOfDescription',
             'convertWindowsEncoding',
         ];
 
@@ -80,6 +84,8 @@ class QubitCsvTransformFactory
             ],
 
             'preserveOrder' => $this->preserveOrder,
+            'sortOrderCallback' => $this->sortOrderCallback,
+            'levelsOfDescription' => $this->levelsOfDescription,
             'convertWindowsEncoding' => $this->convertWindowsEncoding,
 
             'setupLogic' => $this->setupLogic,
@@ -132,6 +138,8 @@ class QubitCsvTransformFactory
                     ],
 
                     'preserveOrder' => $self->preserveOrder,
+                    'sortOrderCallback' => $self->sortOrderCallback,
+                    'levelsOfDescription' => $self->levelsOfDescription,
                     'convertWindowsEncoding' => $self->convertWindowsEncoding,
 
                     'errorLog' => $self->errorLog,
@@ -170,6 +178,8 @@ class QubitCsvTransformFactory
                         if ($levelOfDescriptionAvailable) {
                             if (!empty($self->preserveOrder)) {
                                 $sortorder = $self->getStatus('rows');
+                            } elseif (!empty($self->sortOrderCallback) && is_callable($self->sortOrderCallback)) {
+                                $sortorder = call_user_func_array($self->sortOrderCallback, [$self]);
                             } else {
                                 $sortorder = $self->levelOfDescriptionToSortorder($self->columnValue('levelOfDescription'));
                             }

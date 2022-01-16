@@ -103,23 +103,22 @@ class QubitCsvTransform extends QubitFlatfileImport
         if (false === $link = mysqli_connect(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), getenv('MYSQL_DB'))) {
             throw new sfException('MySQL connection failed.');
         }
-
+        
         $this->link = $link;
 
+        // Create transformation work area if it doesn't yet exist
         $sql = 'CREATE TABLE IF NOT EXISTS import_descriptions (
             id INT NOT NULL AUTO_INCREMENT,
             sortorder INT,
             data LONGTEXT,
             PRIMARY KEY (id))';
 
-        if (false === mysqli_query($link, $sql)) {
-            throw new sfException('MySQL create table failed.');
-        }
+        QubitPdo::modify($sql);
 
+        // Delete contents of work area
         $sql = 'DELETE FROM import_descriptions';
-        if (false === mysqli_query($link, $sql)) {
-            throw new sfException('MySQL delete from import_descriptions failed.');
-        }
+
+        QubitPdo::prepareAndExecute($sql);
     }
 
     public function addRowToMySQL($sortorder)
@@ -133,16 +132,10 @@ class QubitCsvTransform extends QubitFlatfileImport
             }
         }
 
-        $sql = "INSERT INTO import_descriptions
-            (sortorder, data)
-            VALUES ('".mysqli_real_escape_string($this->link, $sortorder)."',
-            '".mysqli_real_escape_string($this->link, serialize($row))."')";
+        // Add serialized row data to the work area
+        $sql = "INSERT INTO import_descriptions (sortorder, data) VALUES (?, ?)";
 
-        $result = mysqli_query($this->link, $sql);
-
-        if (!$result) {
-            throw new sfException('Failed to create MySQL DB row:'.mysqli_error($this->link));
-        }
+        QubitPdo::prepareAndExecute($sql, [$sortorder, serialize($row)]);
     }
 
     public static function numberedFilePathVariation($filename, $number)

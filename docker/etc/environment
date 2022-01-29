@@ -2,7 +2,7 @@
 bootstrap.memory_lock=true
 xpack.security.enabled=false
 cluster.routing.allocation.disk.threshold_enabled=false
-ES_JAVA_OPTS=-Xms640m -Xmx640m
+ES_JAVA_OPTS=-Xms1G -Xmx1G # extend elasticsearch memory (min = max)
 
 # MySQL
 MYSQL_ROOT_PASSWORD=my-secret-pw
@@ -19,3 +19,4 @@ ATOM_MYSQL_DSN=mysql:host=percona;port=3306;dbname=atom;charset=utf8mb4
 ATOM_MYSQL_USERNAME=atom
 ATOM_MYSQL_PASSWORD=atom_12345
 ATOM_DEBUG_IP=172.22.0.1
+ATOM_PHP_MEMORY_LIMIT=1024M # extend PHP memory limit to prevent conflicts with ES

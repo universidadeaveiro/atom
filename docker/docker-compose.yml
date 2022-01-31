@@ -23,7 +23,7 @@ services:
     env_file: etc/environment
     depends_on:
       - gearmand
-      - percona
+      - mysql
     restart: on-failure:5
     volumes:
       - composer_deps:/atom/src/vendor/composer

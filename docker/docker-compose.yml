@@ -14,6 +14,7 @@ services:
     volumes:
       - composer_deps:/atom/src/vendor/composer
       - ..:/atom/src:rw
+      - "/mnt/archivematica-nfs/dip-uploads:/var/dip-uploads:rw"
     ports:
       - "8080:9000"
 
@@ -28,6 +29,7 @@ services:
     volumes:
       - composer_deps:/atom/src/vendor/composer
       - ..:/atom/src:rw
+      - "/mnt/archivematica-nfs/dip-uploads:/var/dip-uploads:rw"
 
   nginx:
     image: nginx:latest

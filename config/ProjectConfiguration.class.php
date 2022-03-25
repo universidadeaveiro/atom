@@ -45,7 +45,11 @@ class ProjectConfiguration extends sfProjectConfiguration
       // sfInstallPlugin and sfPluginAdminPlugin depend on sfPropelPlugin, so
       // must be enabled last
       'sfInstallPlugin',
-      'sfPluginAdminPlugin');
+      'sfPluginAdminPlugin'
+
+      // Plugin for CAS
+      , 'arCasPlugin'
+    );
 
     $this->enablePlugins($plugins);
 
